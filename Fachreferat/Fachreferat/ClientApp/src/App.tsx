@@ -1,26 +1,34 @@
+import { Divider } from 'antd';
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { Classification } from './components/Classification/Classification';
+import { Navigation } from './components/Navigation/Navigation';
+import { PageHeader } from './components/PageHeader/PageHeader';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { routes } from './components/Routes';
+import { Regression } from './components/Regression/Regression';
+import { Cluster } from './components/Cluster/Cluster';
+import { Formula } from './components/Formula/Formula';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <BrowserRouter>
+        <PageHeader/> 
+        <Divider />
+        <Navigation/>
+        <Routes>
+            <Route path={routes.classification} element={<Classification/>} />
+            <Route path={routes.regression} element={<Regression/>} />
+            <Route path={routes.cluster} element={<Cluster/>} />
+            <Route path={routes.formula} element={<Formula/>} />
+            <Route path="/" element={<Classification/>}/>
+            <Route path="" element={<Classification/>}>
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </div>
-  );
+  )
 }
 
 export default App;
