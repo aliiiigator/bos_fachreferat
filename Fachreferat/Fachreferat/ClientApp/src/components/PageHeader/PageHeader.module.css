@@ -1,0 +1,12 @@
+.pageHeaderWrapper{
+    margin: 1em 1em 0em 1em;
+}
+.title{
+    font-weight: 700;
+    font-size: 25px;
+    color: #282c34;
+}
+
+.subTitle{
+    font-style: italic;
+}

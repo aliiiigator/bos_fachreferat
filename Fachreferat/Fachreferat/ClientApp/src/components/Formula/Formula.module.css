@@ -1,0 +1,21 @@
+.classificationWrapper{
+    width: 95%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 70% auto;
+    grid-gap: 2em;
+    margin-top: 3em;
+}
+
+.graphWrapper{
+}
+
+.tweeListWrapper{
+    height: 70vh;
+    overflow-y: scroll;
+}
+
+.tweetListTitle{
+    font-weight: 500;
+    font-size: 14px;
+}
