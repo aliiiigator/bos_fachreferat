@@ -21,20 +21,16 @@ namespace Fachreferat.Services
 
         public static readonly string[] defaultTweetFields = { "lang", "public_metrics", "created_at" };
 
-        public const string randomTweetChacheKey = "randomTweets";
-        public MemoryCache randomTweetCache = new MemoryCache(new MemoryCacheOptions() { ExpirationScanFrequency = new TimeSpan(0,15,0)});
-
-
         public TwitterService()
         {
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
         }
 
-        public async Task<IEnumerable<Tweet>> RequestRandomTweets(int count = 20)
+        public async Task<IEnumerable<Tweet>> RequestRandomTweets(int count = 80)
         {
 
-            var tweets = await LoadTweetsOfFromCache($"/2/tweets/sample/stream?tweet.fields={string.Join(",", defaultTweetFields)}", count, (tweet) => !string.IsNullOrEmpty(tweet.Lang), "./TweetTmp.txt");
+            var tweets = await LoadTweetsStream($"/2/tweets/sample/stream?tweet.fields={string.Join(",", defaultTweetFields)}", count, (tweet) => !string.IsNullOrEmpty(tweet.Lang));
             return tweets;
         }
 
@@ -44,37 +40,6 @@ namespace Fachreferat.Services
 
             return tweets;
         }
-
-        private async Task<IEnumerable<Tweet>> LoadTweetsOfFromCache(string url, int count, Func<Tweet, bool> meetRequirements, string fileName)
-        {
-            var tweets = randomTweetCache.Get<List<Tweet>>(randomTweetChacheKey);
-
-            /*if (tweets != null)
-            {
-                if(tweets.Count > 0) randomTweetCache.Set(randomTweetChacheKey, tweets);                                
-            }*/
-
-            var lines = File.ReadAllLines("./TweetTmp.txt");
-            if (lines?.Length > 0 && lines[0] != "")
-            {
-                List<Tweet> tweetsCsv = lines.Select(v => System.Text.Json.JsonSerializer.Deserialize<Tweet>(v)).ToList();
-                             
-                return tweetsCsv;
-            }
-
-            tweets = (await LoadTweetsStream(url, count, meetRequirements)).ToList();
-
-            using (var file = File.CreateText("./TweetTmp.txt"))
-            {
-                foreach (var tweet in tweets)
-                {
-                    file.WriteLine(System.Text.Json.JsonSerializer.Serialize(tweet));
-                }
-            }
-
-            return tweets ?? new List<Tweet>();
-        }
-
 
         private async Task<IEnumerable<Tweet>> LoadTweetsStream(string url, int count, Func<Tweet, bool> meetRequirements)
         {
@@ -92,19 +57,20 @@ namespace Fachreferat.Services
                         try
                         {
                             var tweet = System.Text.Json.JsonSerializer.Deserialize<TweetDto>(currentLine, _options)?.data;
-                            if (tweet.IsValid() && meetRequirements(tweet)) tweets.Add(tweet);
+                            if (tweet != null && tweet.IsValid() && meetRequirements(tweet)) tweets.Add(tweet);
                         }
                         catch { }
 
                     }
                 }
+                stream.Close();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
 
-            return tweets;
+            return tweets ?? new List<Tweet>();
         }
 
 
@@ -118,7 +84,7 @@ namespace Fachreferat.Services
                 var result = await _httpClient.GetAsync(url);
                 var res = await result.Content.ReadAsStringAsync();
 
-                tweets = System.Text.Json.JsonSerializer.Deserialize<TweetsDto>(res, _options).data;
+                tweets = System.Text.Json.JsonSerializer.Deserialize<TweetsDto>(res, _options)?.data;
                 
             }
             catch (Exception ex)
@@ -126,7 +92,7 @@ namespace Fachreferat.Services
                 Console.WriteLine(ex);
             }
 
-            return tweets;
+            return tweets ?? new List<Tweet>();
         }
 
     }

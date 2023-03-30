@@ -1,11 +1,16 @@
 import { Menu, MenuProps } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { routes } from "../Routes";
 import styles from "./Navigation.module.css";
 
 export const Navigation: React.FC<{}> = ({ }) => {
-    const [current, setCurrent] = useState(window.location.pathname.substring(1));
-
+  const getCurrentNavigation = () => {{
+    const sub = window.location.pathname.substring(1)
+    return sub == "" ? routes.classification : sub
+  }}
+  
+    const [current, setCurrent] = useState(getCurrentNavigation());
+  
     const items: MenuProps['items'] = [
         {
           label: 'Klassifizierung & Charakterisierung',
