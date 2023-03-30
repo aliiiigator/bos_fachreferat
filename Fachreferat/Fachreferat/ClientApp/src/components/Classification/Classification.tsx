@@ -18,6 +18,7 @@ export const Classification: React.FC<{}> = ({ }) => {
 
     useEffect(() => {
         loadTweets()
+        console.log()
     }, []);
 
     const loadTweets =  async () => {
@@ -31,7 +32,7 @@ export const Classification: React.FC<{}> = ({ }) => {
       return ISO6391.getName(lang) == "" ? lang: ISO6391.getName(lang);
     }
 
-    const dataGraph =( _.chain(tweets).groupBy("lang").map((tweets, key) => ({lang: getFullLangName(key), langCount: tweets.length}))).value() ;
+    const dataGraph =_.orderBy(( _.chain(tweets).groupBy("lang").map((tweets, key) => ({lang: getFullLangName(key), langCount: tweets.length}))).value(), "lang") ;
 
     const config = {
         data: dataGraph,

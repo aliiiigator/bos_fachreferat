@@ -4,7 +4,7 @@ import './App.css';
 import { Classification } from './components/Classification/Classification';
 import { Navigation } from './components/Navigation/Navigation';
 import { PageHeader } from './components/PageHeader/PageHeader';
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { routes } from './components/Routes';
 import { Regression } from './components/Regression/Regression';
 import { Cluster } from './components/Cluster/Cluster';
@@ -22,9 +22,7 @@ function App() {
             <Route path={routes.regression} element={<Regression/>} />
             <Route path={routes.cluster} element={<Cluster/>} />
             <Route path={routes.formula} element={<Formula/>} />
-            <Route path="/" element={<Classification/>}/>
-            <Route path="" element={<Classification/>}>
-          </Route>
+            <Route path='*' element={<Navigate replace to={routes.classification} />} />            
         </Routes>
       </BrowserRouter>
     </div>
